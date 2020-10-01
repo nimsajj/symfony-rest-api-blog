@@ -23,7 +23,7 @@ class Article
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      *
-     * @Groups({"read"})
+     * @Groups("read")
      */
     private $id;
 
@@ -37,7 +37,7 @@ class Article
     /**
      * @ORM\Column(type="string", length=255)
      *
-     * @Groups({"read"})
+     * @Groups("read")
      */
     private $slug;
 
@@ -58,23 +58,36 @@ class Article
     /**
      * @ORM\Column(type="boolean")
      *
-     * @Groups({"read"})
+     * @Groups("read")
      */
     private $isPublished;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
      *
-     * @Groups({"read"})
+     * @Groups("read")
      */
     private $publishedAt;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", nullable=true)
      *
-     * @Groups({"read"})
+     * @Groups("read")
      */
     private $updatedAt;
+
+    /**
+     * @ORM\Column(type="datetime")
+     *
+     * @Groups("read")
+     */
+    private $createdAt;
+
+    public function __construct()
+    {
+        $this->isPublished = false;
+        $this->createdAt = new \DateTime();
+    }
 
     public function getId(): ?int
     {
@@ -110,7 +123,7 @@ class Article
         return $this->content;
     }
 
-    public function setContent(string $content): self
+    public function setContent(?string $content): self
     {
         $this->content = $content;
 
@@ -122,7 +135,7 @@ class Article
         return $this->picture;
     }
 
-    public function setPicture(string $picture): self
+    public function setPicture(?string $picture): self
     {
         $this->picture = $picture;
 
@@ -146,7 +159,7 @@ class Article
         return $this->publishedAt;
     }
 
-    public function setPublishedAt(\DateTimeInterface $publishedAt): self
+    public function setPublishedAt(?\DateTimeInterface $publishedAt): self
     {
         $this->publishedAt = $publishedAt;
 
@@ -161,6 +174,18 @@ class Article
     public function setUpdatedAt(\DateTimeInterface $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
 
         return $this;
     }

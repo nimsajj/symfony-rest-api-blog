@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -43,10 +44,15 @@ class User implements UserInterface
     /**
      * @var string The hashed password
      * @ORM\Column(type="string")
-     * 
-     * @Groups("user:write")
      */
     private $password;
+
+    /**
+     * @var string The hashed password
+     * @SerializedName("password")
+     * @Groups("user:write")
+     */
+    private $plainPassword;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -86,7 +92,7 @@ class User implements UserInterface
      */
     public function getUsername(): string
     {
-        return (string) $this->email;
+        return (string) $this->username;
     }
 
     /**
@@ -123,6 +129,18 @@ class User implements UserInterface
         return $this;
     }
 
+    public function setPlainPassword(string $plainPassword): self
+    {
+        $this->plainPassword = $plainPassword;
+
+        return $this;
+    }
+
+    public function getPlainPassword(): string 
+    {
+        return (string) $this->plainPassword;
+    }
+
     /**
      * @see UserInterface
      */
@@ -137,7 +155,7 @@ class User implements UserInterface
     public function eraseCredentials()
     {
         // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+        $this->plainPassword = null;
     }
 
     public function setUsername(string $username): self

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -23,7 +25,7 @@ class User implements UserInterface
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * 
-     * @Groups("user:read")
+     * @Groups({"user:read", "article:read"})
      */
     private $id;
 
@@ -57,7 +59,7 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="string", length=255)
      * 
-     * @Groups({"user:read", "user:write"})
+     * @Groups({"user:read", "user:write", "article:read"})
      */
     private $username;
 
@@ -67,6 +69,18 @@ class User implements UserInterface
      * @Groups({"user:read", "user:write"})
      */
     private $name;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Article::class, mappedBy="author")
+     * 
+     * @Groups("user:read")
+     */
+    private $articles;
+
+    public function __construct()
+    {
+        $this->articles = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -112,6 +126,11 @@ class User implements UserInterface
         $this->roles = $roles;
 
         return $this;
+    }
+
+    public function hasRoles(string $roles): bool
+    {
+        return in_array($roles, $this->roles);
     }
 
     /**
@@ -173,6 +192,37 @@ class User implements UserInterface
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Article[]
+     */
+    public function getArticles(): Collection
+    {
+        return $this->articles;
+    }
+
+    public function addArticle(Article $article): self
+    {
+        if (!$this->articles->contains($article)) {
+            $this->articles[] = $article;
+            $article->setAuthor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeArticle(Article $article): self
+    {
+        if ($this->articles->contains($article)) {
+            $this->articles->removeElement($article);
+            // set the owning side to null (unless already changed)
+            if ($article->getAuthor() === $this) {
+                $article->setAuthor(null);
+            }
+        }
 
         return $this;
     }

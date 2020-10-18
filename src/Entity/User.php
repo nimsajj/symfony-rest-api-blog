@@ -15,7 +15,11 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ApiResource(
  *     normalizationContext={"groups"={"user:read"}},
- *     denormalizationContext={"groups"={"user:write"}}
+ *     denormalizationContext={"groups"={"user:write"}},
+ *     collectionOperations={
+ *         "post"={"path"="/register", "status"=201},
+ *         "get"
+ *     },
  * )
  */
 class User implements UserInterface
